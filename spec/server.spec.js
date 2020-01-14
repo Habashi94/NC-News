@@ -67,14 +67,37 @@ describe("/api", () => {
   describe("/articles", () => {
     it("GET 200 responds with status code of 200", () => {
       return request(server)
-        .get("/api/articles/1")
+        .get("/api/articles/1/comments")
         .expect(200)
         .then(response => {
           expect(response.body.article.article_id).to.equal(1);
+          expect(response.body.article).to.have.keys([
+            "author",
+            "title",
+            "article_id",
+            "body",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          ]);
         });
     });
-    it("POST : 201 responds with the status code 201 and updated new comment", () => {
-      return request(server).post()
+    it("GET : 404 responds with error message when id is non existent", () => {
+      return request(server)
+        .get("/api/articles/400")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Id does not exist");
+        });
+    });
+    it("GET 400 responds with error message when given invalid id data type", () => {
+      return request(server)
+        .get("/api/articles/helooooo")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid Id");
+        });
     });
   });
 });
