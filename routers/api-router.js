@@ -6,6 +6,7 @@ apiRouter.use("/topics", topicRouter);
 apiRouter.use("/users", userRouter);
 apiRouter.use("/articles", articleRouter);
 
+
 apiRouter.all("/*", (req, res, next) => {
   next({ status: 404, msg: "Not Found" });
 });
