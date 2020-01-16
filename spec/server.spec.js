@@ -257,7 +257,7 @@ describe("/api", () => {
         });
     });
   });
-  describe("/api/articles", () => {
+  describe.only("/api/articles", () => {
     it("GET: 200 responds with an array of articles with the amount of comments included", () => {
       return request(server)
         .get("/api/articles")
@@ -378,11 +378,11 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("/comments/:comment_id", () => {
-    it.only("PATCH: 200 responds with status code 200 and updates the votes value by increasing the increment", () => {
+  describe("/comments/:comment_id", () => {
+    it("PATCH: 200 responds with status code 200 and updates the votes value by increasing the increment", () => {
       return request(server)
         .patch("/api/comments/1")
-        .send({ inc_vote: 1 })
+        .send({ inc_votes: 1 })
         .expect(200)
         .then(response => {
           console.log(response.body.comment);
@@ -394,7 +394,7 @@ describe("/api", () => {
     it("PATCH: 200 responds with status code 200 and updates the votes value by decreasing the increment", () => {
       return request(server)
         .patch("/api/comments/1")
-        .send({ inc_vote: -6 })
+        .send({ inc_votes: -6 })
         .expect(200)
         .then(response => {
           console.log(response.body.comment);
@@ -405,7 +405,7 @@ describe("/api", () => {
     it("PATCH: 404 responds with status code 404 when id does not exists", () => {
       return request(server)
         .patch("/api/comments/100")
-        .send({ inc_vote: -6 })
+        .send({ inc_votes: -6 })
         .expect(404)
         .then(response => {
           expect(response.body.msg).to.equal("Id does not exist");
@@ -414,7 +414,7 @@ describe("/api", () => {
     it("PATCH 400 responds with error message when given invalid id data type", () => {
       return request(server)
         .patch("/api/comments/helooooo")
-        .send({ inc_vote: -6 })
+        .send({ inc_votes: -6 })
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Invalid data type inserted");
@@ -434,6 +434,16 @@ describe("/api", () => {
       return request(server)
         .patch("/api/comments/1")
         .send({ inc_votes: 1, name: "Mustafa" })
+        .expect(400)
+        .then(response => {
+          console.log(response.body);
+          expect(response.body.msg).to.equal("Body provided is invalid");
+        });
+    });
+    it("PATCH/ 400 responds with error message when object key sent is incorrect", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ ic_ves: 1 })
         .expect(400)
         .then(response => {
           console.log(response.body);

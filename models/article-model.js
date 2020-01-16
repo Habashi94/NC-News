@@ -141,6 +141,4 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
 };
 
 /*
-
-
-*/
+ */

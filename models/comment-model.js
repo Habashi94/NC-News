@@ -1,12 +1,13 @@
 const connection = require("../db/connection");
 
 exports.updateCommentById = ({ comment_id }, votesBody) => {
-  if (Object.keys(votesBody).length > 1) {
-    return Promise.reject({ msg: "Body provided is invalid", status: 400 });
-  } else {
+  if (
+    votesBody.hasOwnProperty("inc_votes") &&
+    Object.keys(votesBody).length === 1
+  ) {
     return connection("comments")
       .where("comment_id", comment_id)
-      .increment("votes", votesBody.inc_vote || 0)
+      .increment("votes", votesBody.inc_votes || 0)
       .returning("*")
       .then(updatedComment => {
         if (updatedComment.length === 0) {
@@ -14,6 +15,7 @@ exports.updateCommentById = ({ comment_id }, votesBody) => {
         }
         return updatedComment[0];
       });
+  } else {
+    return Promise.reject({ msg: "Body provided is invalid", status: 400 });
   }
 };
-
