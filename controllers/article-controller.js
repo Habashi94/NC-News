@@ -41,6 +41,10 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
+  //check if authzor exist --> another model
+  //  if exist carry on fetching articles
+  // if doesn't exist, the check if exist model will through an error
+
   selectAllArticles(req.query)
     .then(articles => {
       res.status(200).send({ articles });

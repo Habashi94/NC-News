@@ -64,7 +64,7 @@ describe("/api", () => {
         });
     });
   });
-  describe("/articles", () => {
+  describe("/articles/:article_id", () => {
     it("GET 200 responds with status code of 200 and a new comment count key added to the article object", () => {
       return request(server)
         .get("/api/articles/1/")
@@ -340,6 +340,41 @@ describe("/api", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Invalid order requested");
+        });
+    });
+    it("GET: 404 responds with status code 404 when a author does not exist in the database", () => {
+      return request(server)
+        .get("/api/articles?author=mustafa")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Author does not exist");
+        });
+    });
+    it("GET: 404 responds with status code 404 when a topic does not exist in the database", () => {
+      return request(server)
+        .get("/api/articles?topic=dogs")
+        .expect(404)
+        .then(response => {
+          console.log(response.body);
+          expect(response.body.msg).to.equal("Topic does not exist");
+        });
+    });
+    it("GET: 404 responds with the status code 404 when username exists but is not linked to any articles", () => {
+      return request(server)
+        .get("/api/articles?author=lurker")
+        .expect(404)
+        .then(response => {
+          console.log(response.body);
+          expect(response.body.msg).to.equal("No Article Found");
+        });
+    });
+    it("GET: 404 responds with the status code 404 when topic exists but is not linked to any articles", () => {
+      return request(server)
+        .get("/api/articles?topic=paper")
+        .expect(404)
+        .then(response => {
+          console.log(response.body);
+          expect(response.body.msg).to.equal("No Article Found");
         });
     });
   });

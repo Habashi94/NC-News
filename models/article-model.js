@@ -5,7 +5,7 @@ exports.selectArticleById = ({ article_id }) => {
     .select("articles.*")
     .from("articles")
     .where("articles.article_id", article_id)
-    .count({ comment_count: "comments.artticle_id" })
+    .count({ comment_count: "comments.article_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
     .then(articleResponse => {
@@ -70,7 +70,6 @@ exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
 };
 
 exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
-  console.log(order);
   if (order !== "asc" && order !== "desc" && order != undefined) {
     return Promise.reject({ msg: "Invalid order requested", status: 400 });
   } else {
@@ -97,7 +96,47 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
         }
       })
       .then(allArticles => {
-        return allArticles;
+        if (allArticles.length === 0) {
+          if (author) {
+            return connection("users")
+              .select("*")
+              .where("username", author)
+              .then(name => {
+                if (name.length === 0) {
+                  return Promise.reject({
+                    msg: "Author does not exist",
+                    status: 404
+                  });
+                }
+                return Promise.reject({
+                  msg: "No Article Found",
+                  status: 404
+                });
+              });
+          } else if (topic) {
+            return connection("topics")
+              .select("*")
+              .where("slug", topic)
+              .then(result => {
+                if (result.length === 0) {
+                  return Promise.reject({
+                    msg: "Topic does not exist",
+                    status: 404
+                  });
+                }
+                return Promise.reject({
+                  msg: "No Article Found",
+                  status: 404
+                });
+              });
+          }
+        }
+        const formattedArticles = allArticles.map(article => {
+          const copiedArticles = { ...article };
+          copiedArticles.comment_count = +copiedArticles.comment_count;
+          return copiedArticles;
+        });
+        return formattedArticles;
       });
   }
 };
