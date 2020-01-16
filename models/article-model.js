@@ -23,7 +23,6 @@ exports.selectArticleById = ({ article_id }) => {
 };
 
 exports.updateArticleById = ({ article_id }, votesBody) => {
-  console.log(votesBody);
   if (Object.keys(votesBody).length > 1) {
     return Promise.reject({ msg: "Body provided is invalid", status: 400 });
   } else {
@@ -140,3 +139,8 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
       });
   }
 };
+
+/*
+
+
+*/

@@ -257,7 +257,7 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("/api/articles", () => {
+  describe("/api/articles", () => {
     it("GET: 200 responds with an array of articles with the amount of comments included", () => {
       return request(server)
         .get("/api/articles")
@@ -375,6 +375,69 @@ describe("/api", () => {
         .then(response => {
           console.log(response.body);
           expect(response.body.msg).to.equal("No Article Found");
+        });
+    });
+  });
+  describe.only("/comments/:comment_id", () => {
+    it.only("PATCH: 200 responds with status code 200 and updates the votes value by increasing the increment", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ inc_vote: 1 })
+        .expect(200)
+        .then(response => {
+          console.log(response.body.comment);
+          expect(response.body.comment).to.be.an("object");
+
+          expect(response.body.comment.votes).to.equal(17);
+        });
+    });
+    it("PATCH: 200 responds with status code 200 and updates the votes value by decreasing the increment", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ inc_vote: -6 })
+        .expect(200)
+        .then(response => {
+          console.log(response.body.comment);
+          expect(response.body.comment).to.be.an("object");
+          expect(response.body.comment.votes).to.equal(10);
+        });
+    });
+    it("PATCH: 404 responds with status code 404 when id does not exists", () => {
+      return request(server)
+        .patch("/api/comments/100")
+        .send({ inc_vote: -6 })
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Id does not exist");
+        });
+    });
+    it("PATCH 400 responds with error message when given invalid id data type", () => {
+      return request(server)
+        .patch("/api/comments/helooooo")
+        .send({ inc_vote: -6 })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid data type inserted");
+        });
+    });
+
+    it("PATCH/ 400 responds with error message when invalid data type is inserted  ", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ inc_votes: "one" })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid data type inserted");
+        });
+    });
+    it("PATCH/ 400 responds with error message when extra object added to the object", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .send({ inc_votes: 1, name: "Mustafa" })
+        .expect(400)
+        .then(response => {
+          console.log(response.body);
+          expect(response.body.msg).to.equal("Body provided is invalid");
         });
     });
   });
