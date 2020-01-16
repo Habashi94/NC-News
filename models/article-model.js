@@ -5,7 +5,7 @@ exports.selectArticleById = ({ article_id }) => {
     .select("articles.*")
     .from("articles")
     .where("articles.article_id", article_id)
-    .count({ comment_count: "comments.comment_id" })
+    .count({ comment_count: "comments.artticle_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
     .then(articleResponse => {
@@ -67,4 +67,37 @@ exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
 
       return commentResult;
     });
+};
+
+exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
+  console.log(order);
+  if (order !== "asc" && order !== "desc" && order != undefined) {
+    return Promise.reject({ msg: "Invalid order requested", status: 400 });
+  } else {
+    return connection
+      .select(
+        "articles.author",
+        "articles.title",
+        "articles.article_id",
+        "articles.topic",
+        "articles.created_at",
+        "articles.votes"
+      )
+      .from("articles")
+      .count({ comment_count: "comments.article_id" })
+      .leftJoin("comments", "articles.article_id", "comments.article_id")
+      .groupBy("articles.article_id")
+      .orderBy(sort_by || "created_at", order || "desc")
+      .modify(queryChain => {
+        if (topic) {
+          queryChain.where("topic", topic);
+        }
+        if (author) {
+          queryChain.where("articles.author", author);
+        }
+      })
+      .then(allArticles => {
+        return allArticles;
+      });
+  }
 };

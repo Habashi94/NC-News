@@ -257,4 +257,90 @@ describe("/api", () => {
         });
     });
   });
+  describe.only("/api/articles", () => {
+    it("GET: 200 responds with an array of articles with the amount of comments included", () => {
+      return request(server)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.have.keys([
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          ]);
+        });
+    });
+    it("GET : 200 responds with the code 200 and sorts the articles by topics zedabetically", () => {
+      return request(server)
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.be.sortedBy("topic", {
+            descending: true
+          });
+        });
+    });
+    it("GET : 200 responds with the code 200 and sorts the articles by comment_count in ascending order", () => {
+      return request(server)
+        .get("/api/articles?sort_by=comment_count&order=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.be.sortedBy("comment_count", {
+            descending: false
+          });
+        });
+    });
+    it("GET : 200 responds with the code 200 and sorts the articles by votes in descending order", () => {
+      return request(server)
+        .get("/api/articles?sort_by=votes&order=desc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.be.sortedBy("votes", {
+            descending: true
+          });
+        });
+    });
+    it("GET : 200 responds with the code 200 and filters the articles by specific topic that is queried", () => {
+      return request(server)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(response => {
+          const arrayOfArticles = response.body.articles;
+          arrayOfArticles.every(article =>
+            expect(article.topic).to.equal("cats")
+          );
+        });
+    });
+    it("GET : 200 responds with the code 200 and filters the articles by the specified username requested", () => {
+      return request(server)
+        .get("/api/articles?author=icellusedkars")
+        .expect(200)
+        .then(response => {
+          const arrayOfArticles = response.body.articles;
+          arrayOfArticles.every(article =>
+            expect(article.author).to.equal("icellusedkars")
+          );
+        });
+    });
+    it("GET: 404 responds with status code 404 when incorrect column name/does not exist in query", () => {
+      return request(server)
+        .get("/api/articles?sort_by=topik")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid column provided");
+        });
+    });
+    it("GET: 400 responds with status code 400 when incorrect order is requested (not asc/desc)", () => {
+      return request(server)
+        .get("/api/articles?sort_by=topic&order=acse")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid order requested");
+        });
+    });
+  });
 });
