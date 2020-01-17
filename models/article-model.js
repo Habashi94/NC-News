@@ -55,6 +55,7 @@ exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
 };
 
 exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
+  
   if (order !== "asc" && order !== "desc" && order != undefined) {
     return Promise.reject({ msg: "Invalid order requested", status: 400 });
   }

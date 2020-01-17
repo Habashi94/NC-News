@@ -168,31 +168,31 @@ describe("/api", () => {
           );
         });
     });
-    it("POST/ 400 responds with status code 400 when given non-existent article id", () => {
+    it("POST/ 422 responds with status code 400 when given non-existent article id", () => {
       return request(server)
         .post("/api/articles/2000/comments")
         .send({
           username: "lurker",
           body: "I hate this article overrated"
         })
-        .expect(400)
+        .expect(422)
         .then(response => {
           expect(response.body.msg).to.equal(
-            'Key (article_id)=(2000) is not present in table "articles".'
+            "No reference to data in database"
           );
         });
     });
-    it("POST/ 400 responds with status code 400 when given non-existent username", () => {
+    it("POST/ 422 responds with status code 400 when given non-existent username", () => {
       return request(server)
         .post("/api/articles/1/comments")
         .send({
           username: "mustafa",
           body: "I hate this article overrated"
         })
-        .expect(400)
+        .expect(422)
         .then(response => {
           expect(response.body.msg).to.equal(
-            'Key (author)=(mustafa) is not present in table "users".'
+            "No reference to data in database"
           );
         });
     });
@@ -410,7 +410,6 @@ describe("/api", () => {
         .send({ inc_votes: 1 })
         .expect(200)
         .then(response => {
-          console.log(response.body.comment);
           expect(response.body.comment).to.be.an("object");
 
           expect(response.body.comment.votes).to.equal(17);
@@ -422,7 +421,6 @@ describe("/api", () => {
         .send({ inc_votes: -6 })
         .expect(200)
         .then(response => {
-          console.log(response.body.comment);
           expect(response.body.comment).to.be.an("object");
           expect(response.body.comment.votes).to.equal(10);
         });

@@ -9,10 +9,10 @@ server.use((err, req, res, next) => {
   console.log(err.code, "in error handler");
   const errCodes = {
     "22P02": { msg: "Invalid data type inserted", status: 400 },
-    "23503": { msg: err.detail, status: 400 },
+    "23503": { msg: "No reference to data in database", status: 422 },
     "23502": { msg: "No data provided", status: 400 },
     "42703": { msg: "Invalid column provided", status: 404 },
-    "22003": { msg: "Data inputted out of range!", status: 400}
+    "22003": { msg: "Data inputted out of range!", status: 400 }
   };
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });

@@ -25,7 +25,6 @@ exports.removeCommentById = ({ comment_id }) => {
     .where("comment_id", comment_id)
     .del()
     .then(deleteCount => {
-      console.log(deleteCount);
       if (!deleteCount) {
         return Promise.reject({
           status: 404,
