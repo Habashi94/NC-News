@@ -228,7 +228,7 @@ describe("/api", () => {
         });
     });
   });
-  describe("/:article/comments/queries", () => {
+  describe("/:article_id/comments/queries", () => {
     it("GET : 200 responds with the code 200 and sorts the comments by username zedabetically", () => {
       return request(server)
         .get("/api/articles/1/comments?sort_by=author")
@@ -257,7 +257,7 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("/api/articles", () => {
+  describe("/api/articles", () => {
     it("GET: 200 responds with an array of articles with the amount of comments included", () => {
       return request(server)
         .get("/api/articles")
@@ -448,6 +448,27 @@ describe("/api", () => {
         .then(response => {
           console.log(response.body);
           expect(response.body.msg).to.equal("Body provided is invalid");
+        });
+    });
+    it("DELETE: 204 responds with status code 204 and removes the specific comment and responds with no body", () => {
+      return request(server)
+        .delete("/api/comments/2")
+        .expect(204);
+    });
+    it("DELETE: 404 responds with error message when id is non-existent", () => {
+      return request(server)
+        .delete("/api/comments/999")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Id does not exist");
+        });
+    });
+    it("DELETE: 400 responds with error message when id is given as invalid data type", () => {
+      return request(server)
+        .delete("/api/comments/hi")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid data type inserted");
         });
     });
   });

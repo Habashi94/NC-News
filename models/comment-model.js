@@ -19,3 +19,18 @@ exports.updateCommentById = ({ comment_id }, votesBody) => {
     return Promise.reject({ msg: "Body provided is invalid", status: 400 });
   }
 };
+
+exports.removeCommentById = ({ comment_id }) => {
+  return connection("comments")
+    .where("comment_id", comment_id)
+    .del()
+    .then(deleteCount => {
+      console.log(deleteCount);
+      if (!deleteCount) {
+        return Promise.reject({
+          status: 404,
+          msg: "Id does not exist"
+        });
+      }
+    });
+};
