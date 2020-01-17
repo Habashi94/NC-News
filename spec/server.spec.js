@@ -228,7 +228,7 @@ describe("/api", () => {
         });
     });
   });
-  describe("/:article_id/comments/queries", () => {
+  describe("/:article_id/comments ---> queries", () => {
     it("GET : 200 responds with the code 200 and sorts the comments by username zedabetically", () => {
       return request(server)
         .get("/api/articles/1/comments?sort_by=author")
@@ -254,6 +254,22 @@ describe("/api", () => {
           expect(response.body.comments).to.be.sortedBy("votes", {
             descending: true
           });
+        });
+    });
+    it("GET: 400 responds with status code 400 when incorrect order is requested (not asc/desc)", () => {
+      return request(server)
+        .get("/api/articles/1/comments?sort_by=author&order=acsss")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid order requested");
+        });
+    });
+    it("GET: 400 responds with status code 400 when incorrect order is requested (not asc/desc)", () => {
+      return request(server)
+        .get("/api/articles/1/comments?sort_by=author&order=deas")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Invalid order requested");
         });
     });
   });
@@ -371,6 +387,15 @@ describe("/api", () => {
     it("GET: 404 responds with the status code 404 when topic exists but is not linked to any articles", () => {
       return request(server)
         .get("/api/articles?topic=paper")
+        .expect(404)
+        .then(response => {
+          console.log(response.body);
+          expect(response.body.msg).to.equal("No Article Found");
+        });
+    });
+    it("GET: 404 responds with the status code 404 when topic and author exists but is not linked to any articles", () => {
+      return request(server)
+        .get("/api/articles?topic=cats&author=icellusedkars")
         .expect(404)
         .then(response => {
           console.log(response.body);

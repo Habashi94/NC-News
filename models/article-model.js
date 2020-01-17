@@ -55,6 +55,9 @@ exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
 };
 
 exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
+  if (order !== "asc" && order !== "desc" && order != undefined) {
+    return Promise.reject({ msg: "Invalid order requested", status: 400 });
+  }
   return connection("comments")
     .select("comment_id", "votes", "created_at", "author", "body")
     .where("article_id", article_id)
@@ -128,6 +131,11 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
                   status: 404
                 });
               });
+          } else {
+            return Promise.reject({
+              msg: "No Article Found",
+              status: 404
+            });
           }
         }
         const formattedArticles = allArticles.map(article => {
@@ -139,6 +147,3 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
       });
   }
 };
-
-/*
- */
