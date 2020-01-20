@@ -14,11 +14,11 @@
     "migrate-l-test": "NODE_ENV=test knex migrate:latest",
     "migrate-r-test": "NODE_ENV=test knex migrate:rollback",
     "seed-test": "NODE_ENV=test knex seed:run ",
-    "start": "node server.js",
+    "start-node": "node server.js",
     "seed:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex seed:run",
     "migrate-latest:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest",
     "migrate-rollback:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback",
-    "start-listen": "node listen.js"
+    "start": "node listen.js"
   },
   "repository": {
     "type": "git",
