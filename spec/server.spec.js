@@ -45,8 +45,8 @@ describe("/api", () => {
         .get("/api/users/lurker")
         .expect(200)
         .then(response => {
-          expect(response.body.user[0].username).to.equal("lurker");
-          expect(response.body.user[0]).to.have.keys([
+          expect(response.body.user.username).to.equal("lurker");
+          expect(response.body.user).to.have.keys([
             "username",
             "avatar_url",
             "name"
@@ -238,10 +238,10 @@ describe("/api", () => {
           });
         });
     });
-    it("GET : 400 responds with status code 404 and an error message when given invalid column for query ", () => {
+    it("GET : 400 responds with status code 400 and an error message when given invalid column for query ", () => {
       return request(server)
         .get("/api/articles/1/comments?sort_by=autho")
-        .expect(404)
+        .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Invalid column provided");
         });
@@ -342,10 +342,10 @@ describe("/api", () => {
           );
         });
     });
-    it("GET: 404 responds with status code 404 when incorrect column name/does not exist in query", () => {
+    it("GET: 400 responds with status code 400 when incorrect column name/does not exist in query", () => {
       return request(server)
         .get("/api/articles?sort_by=topik")
-        .expect(404)
+        .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Invalid column provided");
         });
@@ -375,31 +375,28 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Topic does not exist");
         });
     });
-    it("GET: 404 responds with the status code 404 when username exists but is not linked to any articles", () => {
+    it("GET: 200 responds with the status code 200 and empty array when username exists but is not linked to any articles", () => {
       return request(server)
         .get("/api/articles?author=lurker")
-        .expect(404)
+        .expect(200)
         .then(response => {
-          console.log(response.body);
-          expect(response.body.msg).to.equal("No Article Found");
+          expect(response.body.articles).to.eql([]);
         });
     });
-    it("GET: 404 responds with the status code 404 when topic exists but is not linked to any articles", () => {
+    it("GET:200 responds with the status code 200 and empty array when topic exists but is not linked to any articles", () => {
       return request(server)
         .get("/api/articles?topic=paper")
-        .expect(404)
+        .expect(200)
         .then(response => {
-          console.log(response.body);
-          expect(response.body.msg).to.equal("No Article Found");
+          expect(response.body.articles).to.eql([]);
         });
     });
-    it("GET: 404 responds with the status code 404 when topic and author exists but is not linked to any articles", () => {
+    it("GET: 200 responds with the status code 200 and empty array when topic and author exists but is not linked to any articles", () => {
       return request(server)
         .get("/api/articles?topic=cats&author=icellusedkars")
-        .expect(404)
+        .expect(200)
         .then(response => {
-          console.log(response.body);
-          expect(response.body.msg).to.equal("No Article Found");
+          expect(response.body.articles).to.eql([]);
         });
     });
   });
@@ -492,6 +489,75 @@ describe("/api", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Invalid data type inserted");
+        });
+    });
+  });
+  describe("/Invalid Methods ", () => {
+    it("responds with 405 when invalid method for route is requested", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(server)
+          [method]("/api/topics")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Method not allowed");
+          });
+      });
+
+      return Promise.all(methodPromises);
+    });
+
+    it("responds with status code 405 when invalid method for route is requested", () => {
+      const invalidMethods = ["patch", "put", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(server)
+          [method]("/api/articles")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Method not allowed");
+          });
+      });
+
+      return Promise.all(methodPromises);
+    });
+    it("responds with status code 405 when invalid method for posting a article is requested", () => {
+      return request(server)
+        .post("/api/articles/1")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method not allowed");
+        });
+    });
+    it("responds with status code 405 when invalid method for a comment is requested", () => {
+      return request(server)
+        .put("/api/comments/1")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method not allowed");
+        });
+    });
+    it("responds with status code 405 when invalid method for users route is requested", () => {
+      return request(server)
+        .put("/api/users/butter_bridge")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method not allowed");
+        });
+    });
+    it("responds with status code 405 when invalid method for specfic route is requested", () => {
+      return request(server)
+        .put("/api/articles/1/comments")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method not allowed");
+        });
+    });
+    it("responds with status code 405 when invalid method for route is requested", () => {
+      return request(server)
+        .delete("/api")
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method not allowed");
         });
     });
   });

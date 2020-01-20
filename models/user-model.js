@@ -8,6 +8,6 @@ exports.selectUserByUsername = ({ username }) => {
       if (userResponse.length === 0) {
         return Promise.reject({ msg: "Username does not exist", status: 404 });
       }
-      return userResponse;
+      return userResponse[0];
     });
 };

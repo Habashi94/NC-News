@@ -5,7 +5,7 @@ exports.selectArticleById = ({ article_id }) => {
     .select("articles.*")
     .from("articles")
     .where("articles.article_id", article_id)
-    .count({ comment_count: "comments.article_id" })
+    .count({ comment_count: "comments.comment_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
     .then(articleResponse => {
@@ -55,7 +55,6 @@ exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
 };
 
 exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
-  
   if (order !== "asc" && order !== "desc" && order != undefined) {
     return Promise.reject({ msg: "Invalid order requested", status: 400 });
   }
@@ -86,7 +85,7 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
         "articles.votes"
       )
       .from("articles")
-      .count({ comment_count: "comments.article_id" })
+      .count({ comment_count: "comments.comment_id" })
       .leftJoin("comments", "articles.article_id", "comments.article_id")
       .groupBy("articles.article_id")
       .orderBy(sort_by || "created_at", order || "desc")
@@ -111,10 +110,7 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
                     status: 404
                   });
                 }
-                return Promise.reject({
-                  msg: "No Article Found",
-                  status: 404
-                });
+                return [];
               });
           } else if (topic) {
             return connection("topics")
@@ -127,10 +123,7 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
                     status: 404
                   });
                 }
-                return Promise.reject({
-                  msg: "No Article Found",
-                  status: 404
-                });
+                return [];
               });
           } else {
             return Promise.reject({
