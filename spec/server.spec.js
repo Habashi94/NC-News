@@ -219,12 +219,12 @@ describe("/api", () => {
           ]);
         });
     });
-    it("get: 404 responds when no comment exists for the specific Id", () => {
+    it("GET: 200 responds with empty array when no comment exists for the specific Id but articles exists", () => {
       return request(server)
-        .get("/api/articles/3/comments")
-        .expect(404)
+        .get("/api/articles/2/comments")
+        .expect(200)
         .then(response => {
-          expect(response.body.msg).to.equal("No comment exists");
+          expect(response.body.comments).to.deep.equal([]);
         });
     });
   });
@@ -450,24 +450,41 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Invalid data type inserted");
         });
     });
-    it("PATCH/ 400 responds with error message when extra object added to the object", () => {
+    // it("PATCH/ 400 responds with error message when extra object added to the object", () => {
+    //   return request(server)
+    //     .patch("/api/comments/1")
+    //     .send({ inc_votes: 1, name: "Mustafa" })
+    //     .expect(400)
+    //     .then(response => {
+    //       console.log(response.body);
+    //       expect(response.body.msg).to.equal("Body provided is invalid");
+    //     });
+    // });
+    // it("PATCH/ 400 responds with error message when object key sent is incorrect", () => {
+    //   return request(server)
+    //     .patch("/api/comments/1")
+    //     .send({ ic_ves: 1 })
+    //     .expect(400)
+    //     .then(response => {
+    //       console.log(response.body);
+    //       expect(response.body.msg).to.equal("Body provided is invalid");
+    //     });
+    // });
+    it("PATCH/ 200 responds with nothing update when no data is provided  ", () => {
       return request(server)
-        .patch("/api/comments/1")
-        .send({ inc_votes: 1, name: "Mustafa" })
-        .expect(400)
+        .patch("/api/comments/2")
+        .send({})
+        .expect(200)
         .then(response => {
           console.log(response.body);
-          expect(response.body.msg).to.equal("Body provided is invalid");
-        });
-    });
-    it("PATCH/ 400 responds with error message when object key sent is incorrect", () => {
-      return request(server)
-        .patch("/api/comments/1")
-        .send({ ic_ves: 1 })
-        .expect(400)
-        .then(response => {
-          console.log(response.body);
-          expect(response.body.msg).to.equal("Body provided is invalid");
+          expect(response.body.comment).to.have.keys([
+            "comment_id",
+            "author",
+            "article_id",
+            "votes",
+            "created_at",
+            "body"
+          ]);
         });
     });
     it("DELETE: 204 responds with status code 204 and removes the specific comment and responds with no body", () => {

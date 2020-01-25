@@ -63,8 +63,9 @@ exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
     .where("article_id", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(commentResult => {
+      console.log(commentResult);
       if (commentResult.length === 0) {
-        return Promise.reject({ msg: "No comment exists", status: 404 });
+        return [];
       }
 
       return commentResult;
