@@ -57,19 +57,29 @@ exports.insertCommentByArticleId = ({ article_id }, { username, body }) => {
 exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   if (order !== "asc" && order !== "desc" && order != undefined) {
     return Promise.reject({ msg: "Invalid order requested", status: 400 });
-  }
-  return connection("comments")
-    .select("comment_id", "votes", "created_at", "author", "body")
-    .where("article_id", article_id)
-    .orderBy(sort_by || "created_at", order || "desc")
-    .then(commentResult => {
-      console.log(commentResult);
-      if (commentResult.length === 0) {
-        return [];
-      }
+  } else {
+    return connection("articles")
+      .select("*")
+      .where("article_id", article_id)
+      .then(article => {
+        if (article.length === 0) {
+          return Promise.reject({ msg: "article does not exist", status: 404 });
+        } else {
+          return connection("comments")
+            .select("comment_id", "votes", "created_at", "author", "body")
+            .where("article_id", article_id)
+            .orderBy(sort_by || "created_at", order || "desc")
+            .then(commentResult => {
+              console.log(commentResult);
+              if (commentResult.length === 0) {
+                return [];
+              }
 
-      return commentResult;
-    });
+              return commentResult;
+            });
+        }
+      });
+  }
 };
 
 exports.selectAllArticles = ({ sort_by, order, topic, author }) => {

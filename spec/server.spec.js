@@ -227,6 +227,14 @@ describe("/api", () => {
           expect(response.body.comments).to.deep.equal([]);
         });
     });
+    it("GET: 200 responds with empty array when no comment exists for the specific Id but articles exists", () => {
+      return request(server)
+        .get("/api/articles/1000/comments")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("article does not exist");
+        });
+    });
   });
   describe("/:article_id/comments ---> queries", () => {
     it("GET : 200 responds with the code 200 and sorts the comments by username zedabetically", () => {
