@@ -6,7 +6,7 @@ server.use(express.json());
 server.use("/api", apiRouter);
 
 server.use((err, req, res, next) => {
-  // console.log(err.code, "in error handler");
+  console.log(err, "in error handler");
   const errCodes = {
     "22P02": { msg: "Invalid data type inserted", status: 400 },
     "23503": { msg: "No reference to data in database", status: 422 },

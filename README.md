@@ -16,6 +16,7 @@ Clone this repo:
 git clone https://github.com/northcoders/be-nc-news
 
 cd be-nc-news
+
 ```
 
 On GitHub create your own **public** repository for your project. **Make sure NOT to initialise it with a README or .gitignore.**
