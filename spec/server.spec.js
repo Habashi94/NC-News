@@ -409,12 +409,13 @@ describe("/api", () => {
     });
   });
   describe("/comments/:comment_id", () => {
-    it("PATCH: 200 responds with status code 200 and updates the votes value by increasing the increment", () => {
+    it.only("PATCH: 200 responds with status code 200 and updates the votes value by increasing the increment", () => {
       return request(server)
         .patch("/api/comments/1")
         .send({ inc_votes: 1 })
         .expect(200)
         .then(response => {
+          console.log(response.body);
           expect(response.body.comment).to.be.an("object");
 
           expect(response.body.comment.votes).to.equal(17);
