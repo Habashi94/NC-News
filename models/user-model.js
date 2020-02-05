@@ -16,6 +16,6 @@ exports.selectUsers = () => {
   return connection("users")
     .select("*")
     .then(userResponse => {
-      return userResponse[0];
+      return userResponse;
     });
 };
