@@ -82,7 +82,8 @@ exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   }
 };
 
-exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
+exports.selectAllArticles = ({ sort_by, order, topic, author, limit = 10,
+  p = 1}) => {
   if (order !== "asc" && order !== "desc" && order != undefined) {
     return Promise.reject({ msg: "Invalid order requested", status: 400 });
   } else {
@@ -108,6 +109,8 @@ exports.selectAllArticles = ({ sort_by, order, topic, author }) => {
           queryChain.where("articles.author", author);
         }
       })
+      .limit(limit)
+      .offset((p - 1) * limit)
       .then(allArticles => {
         if (allArticles.length === 0) {
           if (author) {
