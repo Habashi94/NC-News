@@ -247,6 +247,6 @@ GET /api/users/:username
 
 ## Final Project
 
-[Project on Heroku](https:https://nc-news-mh.herokuapp.com/)
+[Project on Heroku](https://nc-news-mh.herokuapp.com/)
 
 Heroku will host the frontend of my NC News webapp. NC News will be a reddit-style app with accessibility to users/topics/articles/comments.
